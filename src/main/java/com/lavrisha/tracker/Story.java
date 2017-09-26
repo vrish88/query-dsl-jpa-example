@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Builder
 public class Story {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Integer id;
 
     private String title;

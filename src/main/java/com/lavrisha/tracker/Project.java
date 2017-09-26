@@ -3,8 +3,10 @@ package com.lavrisha.tracker;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 @Data
@@ -15,7 +17,4 @@ public class Project {
     private Integer id;
 
     private String name;
-
-    @OneToMany(cascade = {javax.persistence.CascadeType.PERSIST})
-    private List<Story> stories;
 }

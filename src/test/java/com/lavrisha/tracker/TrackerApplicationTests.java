@@ -24,31 +24,28 @@ public class TrackerApplicationTests {
 
     @Test
     public void projectsCanHaveStories() {
-        Story story = Story.builder().title("Save me!").build();
-        Project tractor = Project.builder().name("Tractor").stories(asList(story)).build();
+        Project tractor = Project.builder().name("Tractor").build();
+        Story story = Story.builder().title("Save me!").project(tractor).build();
 
         projectRepository.save(tractor);
-        projectRepository.flush();
+        storyRepository.save(story);
 
-        assertThat(projectRepository.findOne(tractor.getId()).getStories()).contains(story);
+        assertThat(storyRepository.findOne(story.getId()).getProject()).isEqualTo(tractor);
     }
 
     @Test
     public void searchStoriesByTitle() throws Exception {
-        Story johnDeere = Story.builder().title("Build John Deere").build();
-        Project project = Project.builder().name("Tractor").stories(asList(
-            Story.builder().title("Build Tykes Tractor").build(),
-            johnDeere
-        )).build();
+        Project project = Project.builder().name("Tractor").build();
+        Story johnDeere = Story.builder().title("Build John Deere").project(project).build();
+        Story tykes = Story.builder().title("Build Tykes Tractor").project(project).build();
 
-        Project interstellar = Project.builder().name("Interstellar Tractor").stories(asList(
-            Story.builder().title("Galactic Tractor Beam").build(),
-            Story.builder().title("Build John Deere").build()
-        )).build();
+        Project interstellar = Project.builder().name("Interstellar Tractor").build();
+        Story tractorBeam = Story.builder().title("Galactic Tractor Beam").project(interstellar).build();
+        Story johnDeere1 = Story.builder().title("Build John Deere").project(interstellar).build();
 
         projectRepository.save(project);
         projectRepository.save(interstellar);
-        projectRepository.flush();
+        storyRepository.save(asList(tykes, johnDeere, johnDeere1, tractorBeam));
 
         List<Story> results = storyRepository.search(project, SearchParams.builder().title("Build John Deere").build());
 
