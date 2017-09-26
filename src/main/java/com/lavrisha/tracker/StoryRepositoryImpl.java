@@ -28,7 +28,7 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
 
         Root<Story> storyRoot = query.from(Story.class);
         query.where(Specifications.<Story>
-            where((root, query1, builder) -> builder.equal(root.get("title"), searchParams.getTitle()))
+            where((root, query1, builder) -> builder.like(root.get("title"), "%" + searchParams.getTitle() + "%"))
             .and((root, query1, builder) -> builder.equal(root.get("project"), project))
             .toPredicate(storyRoot, query, cb)
         );

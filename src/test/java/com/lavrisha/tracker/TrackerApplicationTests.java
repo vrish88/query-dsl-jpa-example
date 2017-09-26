@@ -7,8 +7,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
-
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,8 +45,13 @@ public class TrackerApplicationTests {
         projectRepository.save(interstellar);
         storyRepository.save(asList(tykes, johnDeere, johnDeere1, tractorBeam));
 
-        List<Story> results = storyRepository.search(project, SearchParams.builder().title("Build John Deere").build());
-
-        assertThat(results).containsOnly(johnDeere);
+        assertThat(storyRepository.search(
+            project,
+            SearchParams.builder().title("Build John Deere").build()
+        )).containsOnly(johnDeere);
+        assertThat(storyRepository.search(
+            project,
+            SearchParams.builder().title("Build John").build()
+        )).containsOnly(johnDeere);
     }
 }
