@@ -19,6 +19,8 @@ public class TrackerApplicationTests {
 
     @Autowired
     private ProjectRepository projectRepository;
+    @Autowired
+    private StoryRepository storyRepository;
 
     @Test
     public void projectsCanHaveStories() {
@@ -30,4 +32,18 @@ public class TrackerApplicationTests {
         assertThat(projectRepository.findOne(tractor.getId()).getStories()).contains(story);
     }
 
+    @Test
+    public void searchStories() throws Exception {
+        Story johnDeere = Story.builder().title("Build John Deere").build();
+        Project project = Project.builder().name("Tractor").stories(asList(
+            Story.builder().title("Build Tykes Tractor").build(),
+            johnDeere
+        )).build();
+
+        projectRepository.save(project);
+
+        List<Story> results = storyRepository.search(SearchParams.builder().title("Build John Deere").build());
+
+        assertThat(results).containsOnly(johnDeere);
+    }
 }
