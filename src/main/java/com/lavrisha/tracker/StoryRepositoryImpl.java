@@ -21,15 +21,17 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
     }
 
     @Override
-    public List<Story> search(SearchParams searchParams) {
+    public List<Story> search(Project project, SearchParams searchParams) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Story> query = cb.createQuery(Story.class);
 
         Root<Story> storyRoot = query.from(Story.class);
-        query.where(Specifications.<Story>where(
-            (root, query1, builder) -> builder.equal(root.get("title"), searchParams.getTitle())
-        ).toPredicate(storyRoot, query, cb));
+        query.where(Specifications.<Story>
+            where((root, query1, builder) -> builder.equal(root.get("title"), searchParams.getTitle()))
+            .and((root, query1, builder) -> builder.equal(root.get("project"), project))
+            .toPredicate(storyRoot, query, cb)
+        );
 
         return entityManager.createQuery(query).getResultList();
     }

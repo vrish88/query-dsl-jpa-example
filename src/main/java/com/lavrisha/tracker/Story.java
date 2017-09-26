@@ -2,7 +2,6 @@ package com.lavrisha.tracker;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
 
@@ -11,7 +10,7 @@ import javax.persistence.*;
 @Builder
 public class Story {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String title;
@@ -19,7 +18,6 @@ public class Story {
     private String owner;
     private String requester;
 
-    @OneToOne
-    @RestResource
+    @ManyToOne
     private Project project;
 }

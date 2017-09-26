@@ -41,9 +41,16 @@ public class TrackerApplicationTests {
             johnDeere
         )).build();
 
-        projectRepository.save(project);
+        Project interstellar = Project.builder().name("Interstellar Tractor").stories(asList(
+            Story.builder().title("Galactic Tractor Beam").build(),
+            Story.builder().title("Build John Deere").build()
+        )).build();
 
-        List<Story> results = storyRepository.search(SearchParams.builder().title("Build John Deere").build());
+        projectRepository.save(project);
+        projectRepository.save(interstellar);
+        projectRepository.flush();
+
+        List<Story> results = storyRepository.search(project, SearchParams.builder().title("Build John Deere").build());
 
         assertThat(results).containsOnly(johnDeere);
     }

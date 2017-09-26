@@ -11,11 +11,11 @@ import java.util.List;
 @Builder
 public class Project {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     private String name;
 
-    @OneToMany(cascade = {CascadeType.PERSIST})
+    @OneToMany(cascade = {javax.persistence.CascadeType.PERSIST})
     private List<Story> stories;
 }
