@@ -54,4 +54,15 @@ public class TrackerApplicationTests {
             SearchParams.builder().title("Build John").build()
         )).containsOnly(johnDeere);
     }
+
+    @Test
+    public void noSearchParamsNoResults() throws Exception {
+        Project project = Project.builder().name("Tractor").build();
+        Story nullTitle = Story.builder().title("null").project(project).build();
+
+        projectRepository.save(project);
+        storyRepository.save(nullTitle);
+
+        assertThat(storyRepository.search(project, SearchParams.builder().build())).isEmpty();
+    }
 }
