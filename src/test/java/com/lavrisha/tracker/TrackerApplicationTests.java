@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,5 +66,19 @@ public class TrackerApplicationTests {
         storyRepository.save(asList(nullTitle, Story.builder().build()));
 
         assertThat(storyRepository.search(project, SearchParams.builder().build())).isEmpty();
+    }
+
+    @Test
+    public void fetchProjectWithStoryDuringSearch() throws Exception {
+        Project project = Project.builder().name("Tractor").build();
+        Story johnDeere = Story.builder().title("Build John Deere").project(project).build();
+        projectRepository.save(project);
+        storyRepository.save(johnDeere);
+        storyRepository.flush();
+        projectRepository.flush();
+
+        List<Story> stories = storyRepository.search(project, SearchParams.builder().title("John").build());
+        Project project1 = stories.get(0).getProject();
+        assertThat(project1).isEqualTo(project);
     }
 }

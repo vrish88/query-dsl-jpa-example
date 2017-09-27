@@ -31,6 +31,8 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
 
         return jpaQueryFactory.select(story)
             .from(story)
+            .innerJoin(story.project)
+            .fetchJoin()
             .where(
                 story.project.eq(project).and(
                     Optional.ofNullable(searchParams.getTitle()).map(story.title::contains).orElse(null)
