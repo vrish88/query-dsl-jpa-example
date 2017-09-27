@@ -41,4 +41,14 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
             .fetchResults()
             .getResults();
     }
+
+    @Override
+    public void updateState(Story story, String newState) {
+        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
+
+        jpaQueryFactory.update(QStory.story)
+            .where(QStory.story.eq(story))
+            .set(QStory.story.state, newState)
+            .execute();
+    }
 }

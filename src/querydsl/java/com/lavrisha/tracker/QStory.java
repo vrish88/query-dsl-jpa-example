@@ -32,6 +32,8 @@ public class QStory extends EntityPathBase<Story> {
 
     public final StringPath requester = createString("requester");
 
+    public final StringPath state = createString("state");
+
     public final StringPath title = createString("title");
 
     public QStory(String variable) {

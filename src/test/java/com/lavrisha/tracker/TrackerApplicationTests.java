@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -21,6 +22,8 @@ public class TrackerApplicationTests {
     private ProjectRepository projectRepository;
     @Autowired
     private StoryRepository storyRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     public void projectsCanHaveStories() {
@@ -80,5 +83,23 @@ public class TrackerApplicationTests {
         List<Story> stories = storyRepository.search(project, SearchParams.builder().title("John").build());
         Project project1 = stories.get(0).getProject();
         assertThat(project1).isEqualTo(project);
+    }
+
+    @Test
+    public void updateStoryState() throws Exception {
+        Project project = Project.builder().name("Tractor").build();
+        Story johnDeere = Story.builder().title("Build John Deere").state("Started").project(project).build();
+
+        projectRepository.save(project);
+        storyRepository.save(johnDeere);
+
+        storyRepository.updateState(johnDeere, "Finished");
+        refreshHibernateCache(johnDeere);
+
+        assertThat(storyRepository.findOne(johnDeere.getId()).getState()).isEqualTo("Finished");
+    }
+
+    private void refreshHibernateCache(Story johnDeere) {
+        entityManager.refresh(johnDeere);
     }
 }

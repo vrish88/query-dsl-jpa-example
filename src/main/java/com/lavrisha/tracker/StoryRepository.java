@@ -8,4 +8,6 @@ import java.util.List;
 @RepositoryRestResource
 public interface StoryRepository extends JpaRepository<Story, Integer> {
     List<Story> search(Project project, SearchParams searchParams);
+
+    void updateState(Story story, String newState);
 }

@@ -21,6 +21,7 @@ public class Story {
     private String description;
     private String owner;
     private String requester;
+    private String state;
 
     @ManyToOne
     private Project project;
