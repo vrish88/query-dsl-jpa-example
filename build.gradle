@@ -26,8 +26,6 @@ dependencies {
     compile('com.querydsl:querydsl-core:4.1.4')
     compile('com.querydsl:querydsl-sql:4.1.4')
     compile('com.querydsl:querydsl-jpa:4.1.4')
-    compile('com.querydsl:querydsl-collections:4.1.4')
-    compile('cglib:cglib:2.2')
     compile('com.h2database:h2')
     compileOnly('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
