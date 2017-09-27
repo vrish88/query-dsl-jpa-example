@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.lavrisha.tracker.QStory.story;
+import static java.util.Collections.emptyList;
 
 public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> implements StoryRepository {
     private final EntityManager entityManager;
@@ -22,13 +23,17 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
 
     @Override
     public List<Story> search(Project project, SearchParams searchParams) {
+        if (searchParams.getTitle() == null) {
+            return emptyList();
+        }
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
 
         return jpaQueryFactory.select(story)
             .from(story)
             .where(
-                story.title.contains(Optional.ofNullable(searchParams.getTitle()).orElse(""))
-                    .and(story.project.eq(project))
+                story.project.eq(project).and(
+                    Optional.ofNullable(searchParams.getTitle()).map(story.title::contains).orElse(null)
+                )
             )
             .fetchResults()
             .getResults();
