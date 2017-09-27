@@ -23,7 +23,7 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
 
     @Override
     public List<Story> search(Project project, SearchParams searchParams) {
-        if (searchParams.getTitle() == null) {
+        if (searchParams.getTitle() == null && searchParams.getRequester() == null) {
             return emptyList();
         }
 
@@ -34,9 +34,13 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
             .innerJoin(story.project)
             .fetchJoin()
             .where(
-                story.project.eq(project).and(
-                    Optional.ofNullable(searchParams.getTitle()).map(story.title::contains).orElse(null)
-                )
+                story.project.eq(project)
+                    .and(
+                        Optional.ofNullable(searchParams.getTitle()).map(story.title::contains).orElse(null)
+                    )
+                    .and(
+                        Optional.ofNullable(searchParams.getRequester()).map(story.requester::contains).orElse(null)
+                    )
             )
             .fetchResults()
             .getResults();

@@ -7,5 +7,5 @@ import lombok.Value;
 @Builder
 public class SearchParams {
     public String title;
-    public String author;
+    public String requester;
 }

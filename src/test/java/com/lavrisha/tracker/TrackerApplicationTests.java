@@ -61,6 +61,31 @@ public class TrackerApplicationTests {
     }
 
     @Test
+    public void searchesByRequester() throws Exception {
+        Project project = Project.builder().name("Tractor").build();
+        Story johnDeere = Story.builder().requester("Dear John").project(project).build();
+        Story tykes = Story.builder().requester("Tykes Tractor").project(project).build();
+
+        Project interstellar = Project.builder().name("Interstellar Tractor").build();
+        Story tractorBeam = Story.builder().requester("Tractor Beam").project(interstellar).build();
+        Story johnDeere1 = Story.builder().requester("Dear John").project(interstellar).build();
+
+        projectRepository.save(project);
+        projectRepository.save(interstellar);
+        storyRepository.save(asList(tykes, johnDeere, johnDeere1, tractorBeam));
+
+        assertThat(storyRepository.search(
+            project,
+            SearchParams.builder().requester("Dear John").build()
+        )).containsOnly(johnDeere);
+        assertThat(storyRepository.search(
+            project,
+            SearchParams.builder().requester("John").build()
+        )).containsOnly(johnDeere);
+
+    }
+
+    @Test
     public void noSearchParamsNoResults() throws Exception {
         Project project = Project.builder().name("Tractor").build();
         Story nullTitle = Story.builder().title("null").project(project).build();
