@@ -8,7 +8,8 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-import static com.lavrisha.tracker.QStory.story;
+import static com.querydsl.core.alias.Alias.$;
+import static com.querydsl.core.alias.Alias.alias;
 import static java.util.Collections.emptyList;
 
 public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> implements StoryRepository {
@@ -26,13 +27,17 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
         if (searchParams.getTitle() == null) {
             return emptyList();
         }
+
+        Story storyAlias = alias(Story.class, "story");
+
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
 
-        return jpaQueryFactory.select(story)
-            .from(story)
+        return jpaQueryFactory.select($(storyAlias))
+            .from($(storyAlias))
             .where(
-                story.project.eq(project).and(
-                    Optional.ofNullable(searchParams.getTitle()).map(story.title::contains).orElse(null)
+                $(storyAlias.getProject())
+                    .eq(project).and(
+                    Optional.ofNullable(searchParams.getTitle()).map($(storyAlias.getTitle())::contains).orElse(null)
                 )
             )
             .fetchResults()
