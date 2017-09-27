@@ -12,6 +12,7 @@ buildscript {
 
 plugins {
     id 'io.franzbecker.gradle-lombok' version '1.10'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.8"
 }
 
 apply plugin: 'java'
@@ -22,6 +23,9 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-data-rest')
+    compile('com.querydsl:querydsl-core:4.1.4')
+    compile('com.querydsl:querydsl-sql:4.1.4')
+    compile('com.querydsl:querydsl-jpa:4.1.4')
     compile('com.h2database:h2')
     compileOnly('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -33,4 +37,9 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+querydsl {
+    jpa = true
+    querydslDefault = true
+
 }

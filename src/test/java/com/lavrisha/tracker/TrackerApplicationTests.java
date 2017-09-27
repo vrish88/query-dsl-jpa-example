@@ -61,7 +61,7 @@ public class TrackerApplicationTests {
         Story nullTitle = Story.builder().title("null").project(project).build();
 
         projectRepository.save(project);
-        storyRepository.save(nullTitle);
+        storyRepository.save(asList(nullTitle, Story.builder().build()));
 
         assertThat(storyRepository.search(project, SearchParams.builder().build())).isEmpty();
     }
