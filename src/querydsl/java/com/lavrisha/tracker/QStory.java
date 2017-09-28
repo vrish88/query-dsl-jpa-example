@@ -28,6 +28,8 @@ public class QStory extends EntityPathBase<Story> {
 
     public final StringPath owner = createString("owner");
 
+    public final NumberPath<Integer> points = createNumber("points", Integer.class);
+
     public final QProject project;
 
     public final StringPath requester = createString("requester");

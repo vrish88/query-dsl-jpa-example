@@ -22,6 +22,7 @@ public class Story {
     private String owner;
     private String requester;
     private String state;
+    private Integer points;
 
     @ManyToOne
     private Project project;

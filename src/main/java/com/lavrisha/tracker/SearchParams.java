@@ -8,4 +8,5 @@ import lombok.Value;
 public class SearchParams {
     public String title;
     public String requester;
+    public Integer points;
 }
