@@ -84,25 +84,25 @@ public class TrackerApplicationTests {
         )).containsOnly(johnDeere);
     }
 
-//    @Test
-//    public void searchesByPoints() throws Exception {
-//        Project project = Project.builder().name("Tractor").build();
-//        Story threePointer = Story.builder().points(3).project(project).build();
-//        Story tykes = Story.builder().points(2).project(project).build();
-//
-//        Project interstellar = Project.builder().name("Interstellar Tractor").build();
-//        Story tractorBeam = Story.builder().points(3).project(interstellar).build();
-//        Story johnDeere1 = Story.builder().points(2).project(interstellar).build();
-//
-//        projectRepository.save(project);
-//        projectRepository.save(interstellar);
-//        storyRepository.save(asList(tykes, threePointer, johnDeere1, tractorBeam));
-//
-//        assertThat(storyRepository.search(
-//            project,
-//            SearchParams.builder().points(3).build()
-//        )).containsOnly(threePointer);
-//    }
+    @Test
+    public void searchesByPoints() throws Exception {
+        Project project = Project.builder().name("Tractor").build();
+        Story threePointer = Story.builder().points(3).project(project).build();
+        Story tykes = Story.builder().points(2).project(project).build();
+
+        Project interstellar = Project.builder().name("Interstellar Tractor").build();
+        Story tractorBeam = Story.builder().points(3).project(interstellar).build();
+        Story johnDeere1 = Story.builder().points(2).project(interstellar).build();
+
+        projectRepository.save(project);
+        projectRepository.save(interstellar);
+        storyRepository.save(asList(tykes, threePointer, johnDeere1, tractorBeam));
+
+        assertThat(storyRepository.search(
+            project,
+            SearchParams.builder().points(3).build()
+        )).containsOnly(threePointer);
+    }
 
     @Test
     public void noSearchParamsNoResults() throws Exception {

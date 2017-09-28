@@ -20,7 +20,8 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
     private final EntityManager entityManager;
     private static List<FieldConditionMappings> searchParamsMapping = asList(
         new FieldConditionMappings<>(SearchParams::getTitle, story.title::contains),
-        new FieldConditionMappings<>(SearchParams::getRequester, story.requester::contains)
+        new FieldConditionMappings<>(SearchParams::getRequester, story.requester::contains),
+        new FieldConditionMappings<>(SearchParams::getPoints, story.points::eq)
     );
 
     public StoryRepositoryImpl(
