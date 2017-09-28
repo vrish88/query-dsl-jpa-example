@@ -1,5 +1,6 @@
 package com.lavrisha.tracker;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -12,11 +13,17 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static com.lavrisha.tracker.QStory.story;
+import static java.util.Arrays.asList;
 
 public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> implements StoryRepository {
     private final EntityManager entityManager;
+    private static List<FieldColumnMapping<String>> searchParamsMapping = asList(
+        new FieldColumnMapping<>(SearchParams::getTitle, story.title),
+        new FieldColumnMapping<>(SearchParams::getRequester, story.requester)
+    );
 
     public StoryRepositoryImpl(
         EntityManager entityManager
@@ -55,13 +62,32 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
             return ExpressionUtils.eq(Expressions.FALSE, Expressions.TRUE);
         }
 
-        return ExpressionUtils.allOf(
-            mapFieldToColumn(searchParams.getTitle(), story.title),
-            mapFieldToColumn(searchParams.getRequester(), story.requester)
-        );
+        return searchParamsMapping.stream()
+            .map(m -> mapFieldToColumn(m.getGetter().apply(searchParams), m.getPath()::contains))
+            .reduce(new BooleanBuilder(), BooleanBuilder::and, BooleanBuilder::and);
     }
 
-    private BooleanExpression mapFieldToColumn(String value, StringPath path) {
-        return Optional.ofNullable(value).map(path::contains).orElse(null);
+    private BooleanExpression mapFieldToColumn(
+        String value, Function<String, BooleanExpression> expression
+    ) {
+        return Optional.ofNullable(value).map(expression).orElse(null);
+    }
+
+    private static class FieldColumnMapping<T> {
+        private final Function<SearchParams, T> getter;
+        private final StringPath path;
+
+        public FieldColumnMapping(Function<SearchParams, T> getter, StringPath path) {
+            this.getter = getter;
+            this.path = path;
+        }
+
+        public Function<SearchParams, T> getGetter() {
+            return getter;
+        }
+
+        public StringPath getPath() {
+            return path;
+        }
     }
 }
