@@ -1,11 +1,8 @@
 package com.lavrisha.tracker;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -17,12 +14,13 @@ import java.util.function.Function;
 
 import static com.lavrisha.tracker.QStory.story;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> implements StoryRepository {
     private final EntityManager entityManager;
-    private static List<FieldColumnMapping<String>> searchParamsMapping = asList(
-        new FieldColumnMapping<>(SearchParams::getTitle, story.title),
-        new FieldColumnMapping<>(SearchParams::getRequester, story.requester)
+    private static List<FieldConditionMappings> searchParamsMapping = asList(
+        new FieldConditionMappings<>(SearchParams::getTitle, story.title::contains),
+        new FieldConditionMappings<>(SearchParams::getRequester, story.requester::contains)
     );
 
     public StoryRepositoryImpl(
@@ -34,15 +32,17 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
 
     @Override
     public List<Story> search(Project project, SearchParams searchParams) {
+        if (searchParams.getTitle() == null && searchParams.getRequester() == null && searchParams.getPoints() == null) {
+            return emptyList();
+        }
+
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
 
         return jpaQueryFactory.select(story)
             .from(story)
             .innerJoin(story.project)
             .fetchJoin()
-            .where(
-                story.project.eq(project).and(convertSearchParamsToConditions(searchParams))
-            )
+            .where(story.project.eq(project).and(convertToConditions(searchParams)))
             .fetchResults()
             .getResults();
     }
@@ -57,37 +57,26 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
             .execute();
     }
 
-    private Predicate convertSearchParamsToConditions(SearchParams searchParams) {
-        if (searchParams.getTitle() == null && searchParams.getRequester() == null) {
-            return ExpressionUtils.eq(Expressions.FALSE, Expressions.TRUE);
-        }
-
+    private Predicate convertToConditions(SearchParams searchParams) {
         return searchParamsMapping.stream()
-            .map(m -> mapFieldToColumn(m.getGetter().apply(searchParams), m.getPath()::contains))
+            .map(m -> m.applyMapping(searchParams))
             .reduce(new BooleanBuilder(), BooleanBuilder::and, BooleanBuilder::and);
     }
 
-    private BooleanExpression mapFieldToColumn(
-        String value, Function<String, BooleanExpression> expression
-    ) {
-        return Optional.ofNullable(value).map(expression).orElse(null);
-    }
-
-    private static class FieldColumnMapping<T> {
+    private static class FieldConditionMappings<T> {
         private final Function<SearchParams, T> getter;
-        private final StringPath path;
+        private final Function<T, BooleanExpression> condition;
 
-        public FieldColumnMapping(Function<SearchParams, T> getter, StringPath path) {
+        FieldConditionMappings(
+            Function<SearchParams, T> getter,
+            Function<T, BooleanExpression> condition
+        ) {
             this.getter = getter;
-            this.path = path;
+            this.condition = condition;
         }
 
-        public Function<SearchParams, T> getGetter() {
-            return getter;
-        }
-
-        public StringPath getPath() {
-            return path;
+        BooleanExpression applyMapping(SearchParams params) {
+            return Optional.ofNullable(getter.apply(params)).map(condition).orElse(null);
         }
     }
 }
