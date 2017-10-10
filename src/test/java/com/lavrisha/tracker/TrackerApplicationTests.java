@@ -143,7 +143,26 @@ public class TrackerApplicationTests {
         assertThat(storyRepository.findOne(johnDeere.getId()).getState()).isEqualTo("Finished");
     }
 
-    private void refreshHibernateCache(Story johnDeere) {
-        entityManager.refresh(johnDeere);
+    @Test
+    public void findTotalProjectPoints() throws Exception {
+        Project project = Project.builder().name("Tractor").build();
+        Story threePointer = Story.builder().title("Tre").points(3).project(project).build();
+        Story tykes = Story.builder().title("Deuce").points(2).project(project).build();
+
+        Project interstellar = Project.builder().name("Interstellar Tractor").build();
+        Story tractorBeam = Story.builder().points(2).project(interstellar).build();
+        Story johnDeere1 = Story.builder().points(1).project(interstellar).build();
+
+        projectRepository.save(project);
+        projectRepository.save(interstellar);
+        storyRepository.save(asList(tykes, threePointer, johnDeere1, tractorBeam));
+
+        ProjectPoints projectStories = storyRepository.findProjectStories(project);
+
+        assertThat(projectStories).isEqualTo(new ProjectPoints("Tractor", 5));
+    }
+
+    private void refreshHibernateCache(Story story) {
+        entityManager.refresh(story);
     }
 }

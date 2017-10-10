@@ -9,5 +9,7 @@ import java.util.List;
 public interface StoryRepository extends JpaRepository<Story, Integer> {
     List<Story> search(Project project, SearchParams searchParams);
 
+    ProjectPoints findProjectStories(Project project);
+
     void updateState(Story story, String newState);
 }

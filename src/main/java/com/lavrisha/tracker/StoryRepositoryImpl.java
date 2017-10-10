@@ -49,6 +49,11 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
     }
 
     @Override
+    public ProjectPoints findProjectStories(Project project) {
+        return null;
+    }
+
+    @Override
     public void updateState(Story story, String newState) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
 
