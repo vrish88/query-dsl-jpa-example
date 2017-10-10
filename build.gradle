@@ -25,6 +25,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-rest')
     compile('com.querydsl:querydsl-core:4.1.4')
     compile('com.querydsl:querydsl-sql:4.1.4')
+    compile('com.querydsl:querydsl-sql-codegen:4.1.4')
     compile('com.querydsl:querydsl-jpa:4.1.4')
     compile('com.h2database:h2')
     compileOnly('org.projectlombok:lombok')
@@ -41,5 +42,4 @@ repositories {
 querydsl {
     jpa = true
     querydslDefault = true
-
 }

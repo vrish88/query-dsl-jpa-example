@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@SpringBootTest
+@SpringBootTest(classes = TrackerApplication.class)
 public class TrackerApplicationTests {
 
     @Autowired
