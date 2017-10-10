@@ -1,7 +1,6 @@
 package com.lavrisha.tracker;
 
 import com.querydsl.sql.Configuration;
-import com.querydsl.sql.H2Templates;
 import com.querydsl.sql.codegen.MetaDataExporter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +16,7 @@ public class GenerateSqlClasses {
         ConfigurableApplicationContext context = SpringApplication.run(GenerateSqlClasses.class, args);
 
         DataSource dataSource = context.getBeanFactory().getBean(DataSource.class);
-        Configuration configuration = new Configuration(H2Templates.DEFAULT);
+        Configuration configuration = context.getBeanFactory().getBean(Configuration.class);
 
         MetaDataExporter exporter = new MetaDataExporter();
         exporter.setPackageName("com.lavrisha.tracker");
