@@ -19,7 +19,6 @@ import java.util.function.Function;
 import static com.lavrisha.tracker.QStory.story;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 
 public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> implements StoryRepository {
     private final EntityManager entityManager;
@@ -87,18 +86,16 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
     public List<RejectionDate> rejectionHistogram(Project project) {
         SimplePath<Long> count = Expressions.path(Long.class, "storyCount");
         return queryFactory
-            .select(SqlStory.story.rejectedDate, SqlStory.story.count().as(count))
+            .select(Projections.constructor(
+                RejectionDate.class,
+                SqlStory.story.rejectedDate,
+                SqlStory.story.count().as(count)
+            ))
             .from(SqlStory.story)
             .innerJoin(SqlProject.project).on(SqlProject.project.id.eq(SqlStory.story.projectId))
             .where(SqlStory.story.projectId.eq(project.getId()))
             .groupBy(SqlStory.story.rejectedDate)
-            .fetch()
-            .stream()
-            .map(tuple -> new RejectionDate(
-                tuple.get(SqlStory.story.rejectedDate).toLocalDate(),
-                tuple.get(count).intValue()
-            ))
-            .collect(toList());
+            .fetch();
     }
 
     private Predicate convertToConditions(SearchParams searchParams) {

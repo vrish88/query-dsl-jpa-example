@@ -34,7 +34,7 @@ public class SqlStory extends com.querydsl.sql.RelationalPathBase<SqlStory> {
 
     public final NumberPath<Integer> projectId = createNumber("projectId", Integer.class);
 
-    public final DatePath<java.sql.Date> rejectedDate = createDate("rejectedDate", java.sql.Date.class);
+    public final DatePath<java.time.LocalDate> rejectedDate = createDate("rejectedDate", java.time.LocalDate.class);
 
     public final StringPath requester = createString("requester");
 

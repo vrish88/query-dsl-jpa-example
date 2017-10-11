@@ -4,6 +4,7 @@ import com.querydsl.sql.H2Templates;
 import com.querydsl.sql.SQLQueryFactory;
 import com.querydsl.sql.spring.SpringConnectionProvider;
 import com.querydsl.sql.spring.SpringExceptionTranslator;
+import com.querydsl.sql.types.JSR310LocalDateType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,6 +16,7 @@ public class AppConfig {
     public com.querydsl.sql.Configuration queryDslConfiguration() {
         com.querydsl.sql.Configuration configuration = new com.querydsl.sql.Configuration(H2Templates.DEFAULT);
         configuration.setExceptionTranslator(new SpringExceptionTranslator());
+        configuration.register(new JSR310LocalDateType());
         return configuration;
     }
 
