@@ -9,8 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
-import java.time.Clock;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -179,6 +178,33 @@ public class TrackerApplicationTests {
 
         assertThat(story.getRejectedDate()).isEqualTo(LocalDate.now(clock));
         assertThat(story.getState()).isEqualTo("rejected");
+    }
+
+    @Test
+    public void retrievesNumberOfRejectionsByDate() throws Exception {
+        Project project = Project.builder().name("Tractor").build();
+        projectRepository.save(project);
+
+        Clock y2k = buildClock(2000, 1, 1);
+        Story dateOverflow = Story.builder().project(project).build();
+        dateOverflow.reject(y2k);
+
+        Clock leap = buildClock(2004, 2, 29);
+        Story leapStory = Story.builder().project(project).build();
+        leapStory.reject(leap);
+
+        storyRepository.save(asList(leapStory, dateOverflow));
+
+        List<RejectionDate> rejectionDates = storyRepository.rejectionHistogram(project);
+
+        assertThat(rejectionDates).contains(
+            new RejectionDate(LocalDate.now(y2k), 1L),
+            new RejectionDate(LocalDate.now(leap), 1L)
+        );
+    }
+
+    private Clock buildClock(int year, int month, int dayOfMonth) {
+        return Clock.fixed(LocalDate.of(year, month, dayOfMonth).atStartOfDay().toInstant(ZoneOffset.UTC), ZoneOffset.UTC);
     }
 
     private void refreshHibernateCache(Story story) {

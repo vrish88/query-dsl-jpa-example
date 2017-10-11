@@ -4,6 +4,8 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.SimplePath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.sql.SQLQueryFactory;
 import org.springframework.data.jpa.repository.support.JpaMetamodelEntityInformation;
@@ -17,6 +19,7 @@ import java.util.function.Function;
 import static com.lavrisha.tracker.QStory.story;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> implements StoryRepository {
     private final EntityManager entityManager;
@@ -78,6 +81,24 @@ public class StoryRepositoryImpl extends SimpleJpaRepository<Story, Integer> imp
             .where(QStory.story.eq(story))
             .set(QStory.story.state, newState)
             .execute();
+    }
+
+    @Override
+    public List<RejectionDate> rejectionHistogram(Project project) {
+        SimplePath<Long> count = Expressions.path(Long.class, "storyCount");
+        return queryFactory
+            .select(SqlStory.story.rejectedDate, SqlStory.story.count().as(count))
+            .from(SqlStory.story)
+            .innerJoin(SqlProject.project).on(SqlProject.project.id.eq(SqlStory.story.projectId))
+            .where(SqlStory.story.projectId.eq(project.getId()))
+            .groupBy(SqlStory.story.rejectedDate)
+            .fetch()
+            .stream()
+            .map(tuple -> new RejectionDate(
+                tuple.get(SqlStory.story.rejectedDate).toLocalDate(),
+                tuple.get(count).intValue()
+            ))
+            .collect(toList());
     }
 
     private Predicate convertToConditions(SearchParams searchParams) {

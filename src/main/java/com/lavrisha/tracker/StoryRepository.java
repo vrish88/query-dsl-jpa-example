@@ -12,4 +12,6 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
     ProjectPoints findProjectStories(Project project);
 
     void updateState(Story story, String newState);
+
+    List<RejectionDate> rejectionHistogram(Project project);
 }
