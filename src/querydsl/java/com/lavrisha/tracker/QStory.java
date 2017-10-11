@@ -32,6 +32,8 @@ public class QStory extends EntityPathBase<Story> {
 
     public final QProject project;
 
+    public final DatePath<java.time.LocalDate> rejectedDate = createDate("rejectedDate", java.time.LocalDate.class);
+
     public final StringPath requester = createString("requester");
 
     public final StringPath state = createString("state");

@@ -9,6 +9,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
+import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -162,6 +164,21 @@ public class TrackerApplicationTests {
         ProjectPoints projectStories = storyRepository.findProjectStories(project);
 
         assertThat(projectStories).isEqualTo(new ProjectPoints("Tractor", 5));
+    }
+
+    @Test
+    public void capturesRejection() throws Exception {
+        Project project = Project.builder().name("Tractor").build();
+        Story story = Story.builder().title("Tre").points(3).project(project).build();
+        Clock clock = Clock.systemUTC();
+
+        story.reject(clock);
+
+        projectRepository.save(project);
+        storyRepository.save(story);
+
+        assertThat(story.getRejectedDate()).isEqualTo(LocalDate.now(clock));
+        assertThat(story.getState()).isEqualTo("rejected");
     }
 
     private void refreshHibernateCache(Story story) {

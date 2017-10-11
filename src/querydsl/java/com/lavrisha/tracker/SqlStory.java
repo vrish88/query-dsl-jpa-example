@@ -34,6 +34,8 @@ public class SqlStory extends com.querydsl.sql.RelationalPathBase<SqlStory> {
 
     public final NumberPath<Integer> projectId = createNumber("projectId", Integer.class);
 
+    public final DatePath<java.sql.Date> rejectedDate = createDate("rejectedDate", java.sql.Date.class);
+
     public final StringPath requester = createString("requester");
 
     public final StringPath state = createString("state");
@@ -74,10 +76,11 @@ public class SqlStory extends com.querydsl.sql.RelationalPathBase<SqlStory> {
         addMetadata(id, ColumnMetadata.named("ID").withIndex(1).ofType(Types.INTEGER).withSize(10).notNull());
         addMetadata(owner, ColumnMetadata.named("OWNER").withIndex(3).ofType(Types.VARCHAR).withSize(255));
         addMetadata(points, ColumnMetadata.named("POINTS").withIndex(4).ofType(Types.INTEGER).withSize(10));
-        addMetadata(projectId, ColumnMetadata.named("PROJECT_ID").withIndex(8).ofType(Types.INTEGER).withSize(10));
-        addMetadata(requester, ColumnMetadata.named("REQUESTER").withIndex(5).ofType(Types.VARCHAR).withSize(255));
-        addMetadata(state, ColumnMetadata.named("STATE").withIndex(6).ofType(Types.VARCHAR).withSize(255));
-        addMetadata(title, ColumnMetadata.named("TITLE").withIndex(7).ofType(Types.VARCHAR).withSize(255));
+        addMetadata(projectId, ColumnMetadata.named("PROJECT_ID").withIndex(9).ofType(Types.INTEGER).withSize(10));
+        addMetadata(rejectedDate, ColumnMetadata.named("REJECTED_DATE").withIndex(5).ofType(Types.DATE).withSize(8));
+        addMetadata(requester, ColumnMetadata.named("REQUESTER").withIndex(6).ofType(Types.VARCHAR).withSize(255));
+        addMetadata(state, ColumnMetadata.named("STATE").withIndex(7).ofType(Types.VARCHAR).withSize(255));
+        addMetadata(title, ColumnMetadata.named("TITLE").withIndex(8).ofType(Types.VARCHAR).withSize(255));
     }
 
 }

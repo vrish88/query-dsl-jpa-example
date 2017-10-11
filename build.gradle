@@ -29,6 +29,7 @@ dependencies {
     compile('com.querydsl:querydsl-sql-spring:4.1.4')
     compile('com.querydsl:querydsl-jpa:4.1.4')
     compile('com.h2database:h2')
+    compile('org.hibernate:hibernate-java8:5.1.0.Final')
     compileOnly('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
